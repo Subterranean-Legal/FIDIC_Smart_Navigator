@@ -1,2 +1,29 @@
 # FIDIC_Smart_Navigator
 “本项目是我系统学习 FIDIC 与国际工程英语的数字化笔记。我将法律条款转化为逻辑判定函数，通过 Python 模拟地下空间工程中的索赔判定场景。”
+# Term 1: Unforeseeable Physical Conditions (不可预见的物质条件)
+# FIDIC Reference: Clause 4.12 [1999 Red Book]
+# ---------------------------------------------------------
+# [地下工程应用逻辑]: 
+# 在地下连续墙施工中，如果地质报告未标明此处存在大型孤石(Boulders)，
+# 导致成槽机损坏或进度延误，这属于典型“不可预见”。
+# 承包商(Contractor)有权索赔工期(EOT)和费用(Cost)，但通常不含利润(Profit)。
+
+def check_claim_eligibility(is_in_geology_report, machine_damaged):
+    """
+    一个简单的索赔资格判定逻辑
+    """
+    if not is_in_geology_report and machine_damaged:
+        claim_status = "Eligible for Cost + Extension of Time" # 符合索赔条件
+        legal_basis = "FIDIC Clause 4.12"
+    else:
+        claim_status = "Contractor's Risk" # 属于承包商风险
+        legal_basis = "Due Diligence failed"
+    
+    return claim_status, legal_basis
+
+# ---------------------------------------------------------
+# Term 2: Variation (变更)
+# FIDIC Reference: Clause 13.1
+# [地下工程应用逻辑]: 
+# 工程师(Engineer)要求将连续墙深度由 30m 增加到 40m 以应对新发现的软土层。
+# 这构成 Variation。Python 逻辑中，这会触发单价(Unit Rate)的重新核算。
