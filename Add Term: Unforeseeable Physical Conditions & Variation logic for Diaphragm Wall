@@ -1,27 +1,38 @@
-# Term 1: Unforeseeable Physical Conditions (不可预见的物质条件)
-# FIDIC Reference: Clause 4.12 [1999 Red Book]
-# ---------------------------------------------------------
-# [地下工程应用逻辑]: 
-# 在地下连续墙施工中，如果地质报告未标明此处存在大型孤石(Boulders)，
-# 导致成槽机损坏或进度延误，这属于典型“不可预见”。
-# 承包商(Contractor)有权索赔工期(EOT)和费用(Cost)，但通常不含利润(Profit)。
+import pandas as pd
+from datetime import datetime
 
-def check_claim_eligibility(is_in_geology_report, machine_damaged):
+def check_diaphragm_wall_claim_eligibility(event_date, notice_date, is_in_geo_report, delay_days):
     """
-    一个简单的索赔资格判定逻辑
+    判断连续墙遇孤石等异常地质的索赔合规性 (FIDIC Clause 4.12 & 20.1)
     """
-    if not is_in_geology_report and machine_damaged:
-        claim_status = "Eligible for Cost + Extension of Time" # 符合索赔条件
-        legal_basis = "FIDIC Clause 4.12"
-    else:
-        claim_status = "Contractor's Risk" # 属于承包商风险
-        legal_basis = "Due Diligence failed"
+    # 雅思核心词汇注释：Calculate the duration to ensure compliance with the 28-day statutory period.
+    days_lapsed = (notice_date - event_date).days
     
-    return claim_status, legal_basis
+    print(f"--- 索赔初步评估启动 (Claim Assessment Initiated) ---")
+    
+    # 1. 检验时效性限制 (Time-bar check under Clause 20.1)
+    if days_lapsed > 28:
+        return "Claim Rejected: Notice submitted beyond the 28-day time-bar limit (Clause 20). 索赔失效。"
+        
+    # 2. 检验不可预见性 (Unforeseeability check under Clause 4.12)
+    if is_in_geo_report:
+        return "Claim Rejected: The boulder was foreseeable per the Geotechnical Report. 非不可预见物理条件。"
+        
+    # 3. 评估实质性影响 (Substantial impact evaluation)
+    if delay_days > 0:
+        return f"Claim Valid: Eligible for Extension of Time (EOT) and Cost under Clause 4.12. 建议发起索赔程序。"
+    
+    return "No Substantial Impact: Monitor the situation."
 
-# ---------------------------------------------------------
-# Term 2: Variation (变更)
-# FIDIC Reference: Clause 13.1
-# [地下工程应用逻辑]: 
-# 工程师(Engineer)要求将连续墙深度由 30m 增加到 40m 以应对新发现的软土层。
-# 这构成 Variation。Python 逻辑中，这会触发单价(Unit Rate)的重新核算。
+# 测试用例 (Test Case for your GitHub Commit)
+# Commit Message: feat(claims): add clause 4.12 evaluation logic for diaphragm wall trenching obstacles
+event_dt = datetime(2026, 3, 10)
+notice_dt = datetime(2026, 3, 15) # Within 28 days
+
+result = check_diaphragm_wall_claim_eligibility(
+    event_date=event_dt, 
+    notice_date=notice_dt, 
+    is_in_geo_report=False, # 地勘报告中没有
+    delay_days=5
+)
+print(result)
